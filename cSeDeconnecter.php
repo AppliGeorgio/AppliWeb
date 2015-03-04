@@ -7,7 +7,8 @@
   $repInclude = './include/';
   require($repInclude . "_coDb.inc.php");
 
-  //gérer déconnexion  
+  // Suppression des variables de session et de la session
+  $_SESSION = array();
+  session_destroy();
   header("Location:cSeConnecter.php");
-  
 ?>
