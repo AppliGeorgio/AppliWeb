@@ -34,11 +34,7 @@
            </li>
          </ul>
     </div>
-	
 	<?php 
-	  }
-	  else {
-		header('Location:cSeConnecter.php');
 	  }
 	?>
     
