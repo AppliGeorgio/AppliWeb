@@ -40,9 +40,22 @@
         <select id="lstMois" name="lstMois" title="Sélectionnez le mois souhaité pour la fiche de frais">
             <?php
                 // on propose tous les mois pour lesquels le visiteur a une fiche de frais
-                
-            ?>    
-            <option value="<?php echo $mois; ?>" selected="selected"></option>
+                $unIdVisiteur = $_SESSION['id']; // on récupère l'id du visiteur
+                $req = $bdd->prepare("SELECT fichefrais.mois as mois 
+                                      FROM fichefrais 
+                                      WHERE fichefrais.idvisiteur = :unIdVisiteur 
+                                      ORDER BY fichefrais.mois DESC");
+                $req->bindValue(":unIdVisiteur", $unIdVisiteur, PDO::PARAM_STR);
+                $req->execute();
+                $resultat = $req->fetchAll();
+                foreach ($resultat as $ligne) 
+                {
+                  $mois = $ligne['mois'];
+                  $noMois = intval(substr($mois, 4, 2)); // numero du mois = les 2 chiffres après les 4 premiers
+                  $annee = intval(substr($mois, 0, 4)); // année = les 4 premiers chiffres
+                }
+                $req->closeCursor();    
+            <option value="<?php echo $noMois; ?>" selected="selected"></option>
             <?php
             ?>
         </select>
