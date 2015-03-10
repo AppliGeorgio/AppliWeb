@@ -3,6 +3,7 @@
  * Page d'accueil de l'application web AppliFrais
  * @package default
  * @todo  RAS
+ *test test test
  */
   $repInclude = './include/';
   require($repInclude . "_coDb.inc.php");
