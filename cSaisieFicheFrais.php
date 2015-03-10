@@ -2,6 +2,7 @@
 
 	require('include/_entete.inc.php');
 	require('include/_menu.inc.php');
+	require('include/_function.lib.php');
 	
 	if(isset($_POST['liste'])) {
 		header('location: cSaisieFicheFrais.php?type='.$_POST['liste']);
