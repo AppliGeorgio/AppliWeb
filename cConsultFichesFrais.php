@@ -8,25 +8,50 @@
   require($repInclude . "_coDb.inc.php");
 
   // page inaccessible si visiteur non connecté
-
+  if(empty($_SESSION["nom"]) && empty($_SESSION["prenom"]))
+  {
+    echo "Acces interdit";
+  }
+  else
+  {
   require($repInclude . "_entete.inc.html");
   require($repInclude . "_menu.inc.php");
   
   // acquisition des données entrées, ici le numéro de mois et l'étape du traitement
-  
-
+  if (isset($_POST['lstMois']) && isset($_POST['etape']))
+  {
+    $moisSaisi = $_POST['lstMois'];
+    $etape = $_POST['etape'];
+  }
+    if ($etape != "demanderConsult" && $etape != "validerConsult") {
       // si autre valeur, on considère que c'est le début du traitement
-           
-  
-   // l'utilisateur valide ses nouvelles données
-                
+           $etape = "demanderConsult"; 
+    } 
+   if ($etape == "validerConsult") {// l'utilisateur valide ses nouvelles données
+
       // vérification de l'existence de la fiche de frais pour le mois demandé
-      
+      $existeFicheFrais = $bdd->prepare("SELECT idVisiteur 
+                            FROM fichefrais 
+                            WHERE idVisiteur = :unIdVisiteur 
+                            AND mois = :moisSaisi");
+      $existeFicheFrais->bindValue(":unIdVisiteur", $unIdVisiteur, PDO::PARAM_STR);
+      $existeFicheFrais->bindValue(":moisSaisi", $moisSaisi, PDO::PARAM_STR);
+      $existeFicheFrais->execute();         
       // si elle n'existe pas, on la crée avec les élets frais forfaitisés à 0
-      
+      if ( !$existeFicheFrais ) {
+         ajouterErreur($tabErreurs, "Le mois demandé est invalide");
+      }   
+      else {
           // récupération des données sur la fiche de frais demandée
-         
-                                  
+         $tabFicheFrais = $bdd->prepare("SELECT IFNULL(nbJustificatifs,0) as nbJustificatifs, Etat.id as idEtat, libelle as libelleEtat, dateModif, montantValide
+                            FROM fichefrais 
+                            WHERE fichefrais.id = Etat.id
+                            AND idVisiteur = :unIdVisiteur 
+                            AND mois = :moisSaisi");
+         $tabFicheFrais->bindValue(":unIdVisiteur", $unIdVisiteur, PDO::PARAM_STR);
+         $tabFicheFrais->bindValue(":moisSaisi", $moisSaisi, PDO::PARAM_STR);
+         $tabFicheFrais->execute(); 
+     }                             
 ?>
   <!-- Division principale -->
   <div id="contenu">
@@ -51,12 +76,13 @@
                 foreach ($resultat as $ligne) 
                 {
                   $mois = $ligne['mois'];
-                  $noMois = intval(substr($mois, 4, 2)); // numero du mois = les 2 chiffres après les 4 premiers
-                  $annee = intval(substr($mois, 0, 4)); // année = les 4 premiers chiffres
+                  $noMois = intval(substr($mois, 4, 2));
+                  $annee = intval(substr($mois, 0, 4));
                 }
-                $req->closeCursor();    
-            <option value="<?php echo $noMois; ?>" selected="selected"></option>
+            ?>     
+            <option value="<?php echo $mois; ?>" <?php if ($moisSaisi == $mois) { ?> selected="selected" <?php } ?>><?php echo obtenirLibelleMois($noMois) . " " . $annee; ?></option>
             <?php
+              $req->closeCursor();
             ?>
         </select>
       </p>
@@ -76,21 +102,35 @@
 // de la fiche de frais demandée, uniquement si pas d'erreur détecté au contrôle
     
 ?>
-    <h3>Fiche de frais du mois de  : 
-    <em> </em>
-    depuis le <em></em></h3>
+    <h3>Fiche de frais du mois de <?php echo obtenirLibelleMois(intval(substr($moisSaisi,4,2))) . " " . substr($moisSaisi,0,4); ?> : 
+    <em> <?php echo $tabFicheFrais["libelleEtat"]; ?> </em>
+    depuis le <em>?php echo $tabFicheFrais["dateModif"]; ?></em></h3>
     <div class="encadre">
-    <p>Montant validé : 
+    <p>Montant validé :  <?php echo $tabFicheFrais["montantValide"] ;
+        ?>
     </p>
-<?php          
+            <?php          
             // demande de la requête pour obtenir la liste des éléments 
             // forfaitisés du visiteur connecté pour le mois demandé
-            
+              $req = $bdd->prepare("SELECT idFraisForfait, libelle, quantite
+                                  FROM LigneFraisForfait
+                                  WHERE FraisForfait.id = LigneFraisForfait.idFraisForfait 
+                                  AND idVisiteur = :unIdVisiteur
+                                  AND mois = :moisSaisi");
+              $req->bindValue(":unIdVisiteur", $unIdVisiteur, PDO::PARAM_STR);
+              $req->bindValue(":moisSaisi", $moisSaisi, PDO::PARAM_STR);
+              $req->execute();
+              $resultat = $req->fetchAll();
             // parcours des frais forfaitisés du visiteur connecté
             // le stockage intermédiaire dans un tableau est nécessaire
             // car chacune des lignes du jeu d'enregistrements doit être doit être
-            // affichée au sein d'une colonne du tableau HTML
-            
+            // affichée au sein d'une colonne du tableau HTML                
+              $tabEltsFraisForfait = array();
+              foreach ($resultat as $ligne) 
+                {
+                  $tabEltsFraisForfait[$ligne["libelle"]] = $ligne["quantite"];
+                }      
+              $req->closeCursor();      
             ?>
   	<table class="listeLegere">
   	   <caption>Quantités des éléments forfaitisés</caption>
@@ -98,27 +138,27 @@
             <?php
             // premier parcours du tableau des frais forfaitisés du visiteur connecté
             // pour afficher la ligne des libellés des frais forfaitisés
-            
+            foreach ( $tabEltsFraisForfait as $unLibelle => $uneQuantite ) {
             ?>
-                <th>Un Libelle</th>
+                <th><?php echo $unLibelle ; ?>}</th>
             <?php
-            
+            }
             ?>
         </tr>
         <tr>
             <?php
             // second parcours du tableau des frais forfaitisés du visiteur connecté
             // pour afficher la ligne des quantités des frais forfaitisés
-            
+            foreach ( $tabEltsFraisForfait as $unLibelle => $uneQuantite ) {
             ?>
-                <td class="qteForfait">Une quantité</td>
+                <td class="qteForfait"><?php echo $uneQuantite ; ?></td>
             <?php
-            
+            }
             ?>
         </tr>
     </table>
   	<table class="listeLegere">
-  	   <caption>Descriptif des éléments hors forfait -  justificatifs reçus -
+  	   <caption>Descriptif des éléments hors forfait - <?php echo $tabFicheFrais["nbJustificatifs"]; ?> justificatifs reçus -
        </caption>
              <tr>
                 <th class="date">Date</th>
@@ -128,24 +168,36 @@
 <?php          
             // demande de la requête pour obtenir la liste des éléments hors
             // forfait du visiteur connecté pour le mois demandé
-            
+            $req = $bdd->prepare("SELECT id, date, libelle, montant
+                                  FROM LigneFraisHorsForfait
+                                  WHERE FraisForfait.id = LigneFraisForfait.idFraisForfait 
+                                  AND idVisiteur = :unIdVisiteur
+                                  AND mois = :moisSaisi");
+              $req->bindValue(":unIdVisiteur", $unIdVisiteur, PDO::PARAM_STR);
+              $req->bindValue(":moisSaisi", $moisSaisi, PDO::PARAM_STR);
+              $req->execute();
+              $resultat = $req->fetchAll();
             
             // parcours des éléments hors forfait 
-            
+            foreach ($resultat as $ligne) 
+                {            
             ?>
                 <tr>
-                   <td>date</td>
-                   <td>libelle</td>
-                   <td>montant</td>
+                   <td><?php echo $ligne["date"]; ?></td>
+                   <td><?php echo $ligne["libelle"]; ?></td>
+                   <td><?php echo $ligne["montant"]; ?></td>
                 </tr>
-            <?php
-  ?>
+    <?php
+      $req->closeCursor(); 
+    ?>
     </table>
   </div>
 <?php
-       
+     }
+  }  
 ?>    
   </div>
 <?php        
   require($repInclude . "_pied.inc.html");
+  }
 ?> 
