@@ -8,7 +8,6 @@
   require($repInclude . "_coDb.inc.php");
 
   require($repInclude . "_entete.inc.html");
-  require($repInclude . "_menu.inc.php");
   
   //Connexion du Visiteur
   if(isset($_POST["txtLogin"]) && isset($_POST["txtMdp"]))
