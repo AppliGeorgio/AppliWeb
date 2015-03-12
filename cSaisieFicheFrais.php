@@ -1,7 +1,7 @@
 <?php 
 
-	require('include/_entete.inc.php');
-	require('include/_menu.inc.php');
+	require('include/_entete.inc.html');
+	require('include/_menu.inc.html');
 	require('include/_function.lib.php');
 	
 	if(isset($_POST['liste'])) {
