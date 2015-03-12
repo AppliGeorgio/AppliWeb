@@ -26,15 +26,23 @@
            <li class="smenu">
               <a href="cSeDeconnecter.php" title="Se déconnecter">Se déconnecter</a>
            </li>
-           <li class="smenu">
-              <a href="cSaisieFicheFrais.php" title="Saisie fiche de frais du mois courant">Saisie fiche de frais</a>
-           </li>
-           <li class="smenu">
-              <a href="cConsultFichesFrais.php" title="Consultation de mes fiches de frais">Mes fiches de frais</a>
-           </li>
+           <?php
+           if($_SESSION['comptable'] == 1){
+            echo "<li class='smenu'>";
+            echo "<a href='formValidFrais.htm' title='Saisie fiche de frais du mois courant'>Saisie fiche de frais</a></li>";
+           }
+           else{
+            echo "<li class='smenu'>";
+            echo "<a href='cSaisieFicheFrais.php' title='Saisie fiche de frais du mois courant'>Saisie fiche de frais</a></li>";
+            echo "<li class='smenu'>";
+            echo "<a href='cConsultFichesFrais.php' title='Consultation de mes fiches de frais'>Mes fiches de frais</a></li>";
+           }
+           ?>
          </ul>
     </div>
 	<?php 
 	  }
 	?>
+    
+
     
