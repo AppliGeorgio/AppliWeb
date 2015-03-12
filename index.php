@@ -31,6 +31,7 @@
     $_SESSION['id'] = $resultat['id'];
     $_SESSION['nom'] = $resultat['nom'];
     $_SESSION['prenom'] = $resultat['prenom'];
+    $_SESSION['comptable'] = $resultat['comptable'];
     header('Location:cAccueil.php');
     }
     else
