@@ -34,7 +34,7 @@
 		}
 
 		if(isset($_POST['cmd'])) {
-			$id = $_SESSEION['id'];
+			$id = $_SESSION['id'];
 			$date1 = $_POST['txtDateHF'];
 			$mois = date("Ym");
 			$date1 = $_POST['txtDateHF'];
