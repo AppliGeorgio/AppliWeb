@@ -1,5 +1,5 @@
 <?php 
-
+	require('include/_coDb.inc.php');
 	require('include/_entete.inc.html');
 	require('include/_menu.inc.html');
 	require('include/_function.lib.php');
