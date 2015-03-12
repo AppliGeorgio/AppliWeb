@@ -14,7 +14,7 @@ function select() {
 
 }
 
-function forfaitises($pdo){
+function forfaitises($bdd){
   $mois = date("Ym"); 
   $id = $_SESSION['id'];
 	$Mois = array("","Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre");
@@ -28,7 +28,7 @@ function forfaitises($pdo){
           		<fieldset>
             		<legend>Eléments forfaitisés</legend>';
      			
-             					$req = $pdo->query("SELECT * FROM lignefraisforfait WHERE `idVisiteur` = '$id' AND mois = '$mois'");
+             					$req = $bdd->query("SELECT * FROM lignefraisforfait WHERE `idVisiteur` = '$id' AND mois = '$mois'");
              					$res = $req->fetchAll();
                             if(isset($res[0])){
                 			foreach ($res as $key) {
@@ -53,10 +53,10 @@ function forfaitises($pdo){
                             echo '<form action="" method="post"><input type="submit" value="Ajouter les nouveau champs de frais forfaitisés du mois de '.$Mois.'" size="20" name="champ" /></form>';
                           }
             if(isset($_POST['champ'])){
-                    $pdo->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'ETP')");
-                    $pdo->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'KM')");
-                    $pdo->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'NUI')");
-                    $pdo->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'REP')");
+                    $bdd->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'ETP')");
+                    $bdd->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'KM')");
+                    $bdd->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'NUI')");
+                    $bdd->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'REP')");
             }
 
           		echo '</fieldset>
@@ -72,7 +72,7 @@ function forfaitises($pdo){
     </form>';
 }
 
-function non_forfaitises($pdo){
+function non_forfaitises($bdd){
 	echo '
 <h2 style="margin-bottom:50px;">Sasie Fiche Frais</h2>
 	<a href="cSaisieFicheFrais.php">Retour</a> // <a href="cSaisieFicheFrais.php?type=hforf">Actualisé</a><br>
@@ -121,7 +121,7 @@ function non_forfaitises($pdo){
                 <th class="action">&nbsp;</th>              
              </tr>';
 
-     	$req = $pdo->query("SELECT * FROM lignefraishorsforfait ");
+     	$req = $bdd->query("SELECT * FROM lignefraishorsforfait ");
     	$res = $req->fetchAll();
      	foreach ($res as $fin ) {
           $date1 = $fin["date"];
@@ -139,19 +139,19 @@ function non_forfaitises($pdo){
       
 }
 
-function supprimerligne($pdo,$num) {
+function supprimerligne($bdd,$num) {
 
-      $pdo->exec("delete from LigneFraisHorsForfait where id = ".$num);
+      $bdd->exec("delete from LigneFraisHorsForfait where id = ".$num);
 
 }
 
-function ajouterhorsforfait($pdo,$id,$mois,$date,$libelle,$montant){
-      $pdo->exec("INSERT INTO LigneFraisHorsForfait(idVisiteur, mois, date, libelle, montant) 
+function ajouterhorsforfait($bdd,$id,$mois,$date,$libelle,$montant){
+      $bdd->exec("INSERT INTO LigneFraisHorsForfait(idVisiteur, mois, date, libelle, montant) 
                   VALUES ('" . $id . "','" . $mois . "','" . $date . "','" . $libelle . "'," . $montant .")");
 
 }
 
-function ajouterforfait($pdo){
+function ajouterforfait($bdd){
       $id = $_SESSION['id'];
       $etpv = $_POST['ETP'];     
       $kmv = $_POST['KM'];
@@ -163,11 +163,12 @@ function ajouterforfait($pdo){
       $nui = 'NUI';
       $rep = 'REP';
 
-     $pdo->exec("UPDATE `lignefraisforfait` SET `quantite`= '$etpv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'ETP'");
-     $pdo->exec("UPDATE `lignefraisforfait` SET `quantite`= '$kmv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'KM'");
-     $pdo->exec("UPDATE `lignefraisforfait` SET `quantite`= '$nuiv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'NUI'");
-     $pdo->exec("UPDATE `lignefraisforfait` SET `quantite`= '$repv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'REP'");      
+     $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$etpv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'ETP'");
+     $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$kmv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'KM'");
+     $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$nuiv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'NUI'");
+     $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$repv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'REP'");      
 
      header('Location: cSaisieFicheFrais.php?type=forf');
 }
 ?>
+
