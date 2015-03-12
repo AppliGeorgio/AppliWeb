@@ -1,7 +1,8 @@
 <?php 
+
 	require('include/_coDb.inc.php');
 	require('include/_entete.inc.html');
-	require('include/_menu.inc.html');
+	require('include/_menu.inc.php');
 	require('include/_function.lib.php');
 	
 	if(isset($_POST['liste'])) {
@@ -17,19 +18,19 @@
       	
 		elseif($_GET['type'] =='forf') {
 			// On appelle la fonction qui affiche le formulaire forfaitisé avec en argument la variable de connexion à la BDD
-			forfaitises($pdo);
+			forfaitises($bdd);
 			if(isset($_POST['valide'])){
-			ajouterforfait($pdo);
+			ajouterforfait($bdd);
 			}
 		}
 
 		elseif($_GET['type'] == 'hforf') {
 			// Sinon on appelle la fonction qui affiche le formulaire non forfaitisé avec en argument la variable de connexion à la BDD
-			non_forfaitises($pdo);
+			non_forfaitises($bdd);
 		}
 
 		if(isset($_GET['etape'])) {
-			supprimerligne($pdo,$_GET['idLigneHF']);
+			supprimerligne($bdd,$_GET['idLigneHF']);
 			header('Location:cSaisieFicheFrais.php');
 		}
 
@@ -42,10 +43,11 @@
 
 			$libelle = $_POST['txtLibelleHF'];
 			$montant = $_POST['txtMontantHF'];
-			ajouterhorsforfait($pdo,$id,$mois,$date,$libelle,$montant);
+			ajouterhorsforfait($bdd,$id,$mois,$date,$libelle,$montant);
 		}
 		?>
  	</div>
 <?php 
 	require('include/_pied.inc.html');
 ?>
+
