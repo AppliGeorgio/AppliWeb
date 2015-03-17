@@ -1,3 +1,9 @@
+<?php
+	$repInclude = './include/';
+  	require($repInclude . "_coDb.inc.php");
+	//si l'utilisateur 
+	
+?>
 <html>
 <head>
 	<title>Suivi des frais de visite</title>
@@ -23,35 +29,116 @@
 <div name="droite" style="float:left;width:80%;">
 	<div name="haut" style="margin: 2 2 2 2 ;height:10%;float:left;"><h1>Suivi de remboursement des Frais</h1></div>	
 	<div name="bas" style="margin : 10 2 2 2;clear:left;background-color:77AADD;color:white;height:88%;">
-	<form name="formConsultFrais" method="post" action="chercheFrais.php">
-		<h1> Période </h1>
-			<label class="titre">Mois/Année :</label> <input class="zone" type="text" name="dateConsult" size="12" />
+		<h1> PÃ©riode </h1>
+			<form action="formConsultFrais.php" method="POST">
+				<label class="titre">AnnÃ©e/Mois :</label> 
+				<input class="zone" type="text" name="dateConsult" size="12" />	
+				<input type="submit" class="bouton" value="Choisir une date" />
+			</form>
 		<p class="titre" />
 		<div style="clear:left;"><h2>Frais au forfait </h2></div>
 		<table style="color:white;" border="1">
-			<tr><th>Repas midi</th><th>Nuitée </th><th>Etape</th><th>Km </th><th>Situation</th><th>Date opération</th><th>Remboursement</th></tr>
-			<tr align="center"><td width="80"><label  size="3" name="repas"/></td>
-				<td width="80"><label size="3" name="nuitee"/></td> 
-				<td width="80"> <label size="3" name="etape"/></td>
-				<td width="80"> <label size="3" name="km" /></td>
-				<td width="80"> <label size="3" name="situation" /></td>	
-				<td width="80"> <label size="3" name="dateOper" /></td>	
-				<td width="80"> <label size="3" name="dateOper" /></td>						
+			<tr><th>Repas midi</th><th>NuitÃ©e </th><th>Etape</th><th>Km </th><th>Situation</th><th>Date opÃ©ration</th></tr>
+			<?php 
+			if (isset($_POST['dateConsult'])) 
+    	{
+    		$dateConsult = $_POST['dateConsult'];
+
+			$req1 = $bdd->prepare("SELECT mois, dateModif, idEtat 
+								  FROM fichefrais
+								  WHERE mois = :dateConsult");
+			$req1->bindValue(":dateConsult", $dateConsult, PDO::PARAM_INT);
+	    	$req1->execute();
+	    	$resultat2 = $req1->fetchAll();
+	    	foreach($resultat2 as $ligne2) 
+			{
+				$situation= $ligne2["idEtat"]; 
+				$dateModif = $ligne2["dateModif"];
+				$mois = $ligne2["mois"];
+
+				if ($situation == 'CL')
+				{
+					$situation = 'Saisie cloturÃ©e';
+				}
+				if ($situation == 'CR')
+				{
+					$situation = 'Saisie en cours';
+				}
+				if ($situation == 'RB')
+				{
+					$situation = 'RemboursÃ©e';
+				}
+				if ($situation == 'VA')
+				{
+					$situation = 'ValidÃ©e et mise en paiement';
+				}
+
+	    	$req2 = $bdd->prepare("SELECT (montant*quantite) as prix
+										FROM lignefraisforfait LFF, fraisforfait FF
+										WHERE LFF.idFraisForfait = FF.id
+										ORDER BY LFF.idVisiteur");
+	    	$req2->execute();
+	    	$resultat = $req2->fetchAll();	
+	    	$tableau = array();    
+			
+				foreach($resultat as $ligne) 
+			{
+				array_push($tableau, $ligne["prix"]);
+    		}
+
+			?>
+			<tr align="center">
+				<?php
+					for()
+				?>
+				<td width="80"><label  size="3" name="repas"/><?php echo $tableau[3]; ?></td>
+				<td width="80"><label size="3" name="nuitee"/><?php echo $tableau[2]; ?></td> 
+				<td width="80"> <label size="3" name="etape"/><?php echo $tableau[0]; ?></td>
+				<td width="80"> <label size="3" name="km" /><?php echo $tableau[1]; ?></td>
+				<td width="80"> <label size="3" name="situation" /><?php echo $situation; ?></td>	
+				<td width="80"> <label size="3" name="dateOper" /><?php echo  $dateModif; ?></td>					
 			</tr>
+			<?php
+			
+		}
+		
+		
+			?>	
 		</table>
 		
 		<p class="titre" /><div style="clear:left;"><h2>Hors Forfait</h2></div>
 		<table style="color:white;" border="1">
-			<tr><th>Date</th><th>Libellé </th><th>Montant</th><th>Situation</th><th>Date opération</th></tr>
-			<tr align="center"><td width="100" ><label size="12" name="hfDate1"/></td>
-				<td width="220"><label size="30" name="hfLib1"/></td> 
-				<td width="90" ><label size="10" name="hfMont1"/></td>
-				<td width="80"> <label size="3" name="hfSitu1" /></td>
-				<td width="80"> <label size="3" name="hfDateOper1" /></td>		
+			<tr><th>Date</th><th>LibellÃ© </th><th>Montant</th><th>Situation</th><th>Date opÃ©ration</th></tr>
+			<?php 
+			
+				
+
+				$req1 = $bdd->prepare("SELECT  libelle, date, montant, dateModif, idEtat, COUNT(nbJustificatifs)
+								  FROM lignefraishorsforfait L, fichefrais F
+								  WHERE L.idVisiteur = F.idVisiteur
+								  AND F.mois = :dateConsult");
+			$req1->bindValue(":dateConsult", $dateConsult, PDO::PARAM_INT);
+	    	$req1->execute();
+	    	$resultat1 = $req1->fetchAll();
+	    	foreach($resultat1 as $ligne1) 
+			{
+				$libelle = $ligne1["libelle"];
+				$date = $ligne1["date"];
+				$montant = $ligne1["montant"];
+				$situation1= $ligne1["idEtat"]; 
+				$dateModif1 = $ligne1["dateModif"];
+				$nbJustificatifs = $ligne1["nbJustificatifs"];
+			?>
+			<tr align="center"><td width="100" ><label size="12" name="hfDate1"/><?php echo $date;?></td>
+				<td width="220"><label size="30" name="hfLib1"/><?php echo $libelle;?></td> 
+				<td width="90" ><label size="10" name="hfMont1"/><?php echo $montant;?></td>
+				<td width="80"> <label size="3" name="hfSitu1" /><?php echo $situation1;?></td>
+				<td width="80"> <label size="3" name="hfDateOper1" /><?php echo $dateModif1;?></td>		
 				</tr>
+				<?php }}?>
 		</table>	
 		<p class="titre"></p>
-		<div class="titre">Nb Justificatifs</div><input type="text" class="zone" size="4" name="hcMontant"/>
+		<div class="titre">Nb Justificatifs</div><input type="text" class="zone" size="4" name="hcMontant" value="<?php echo $nbJustificatifs;?>"/>
 	</form>
 	</div>
 </div>
