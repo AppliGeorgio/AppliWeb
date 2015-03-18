@@ -1,146 +1,165 @@
 <?php
 	$repInclude = './include/';
   	require($repInclude . "_coDb.inc.php");
-	//si l'utilisateur 
-	
+  	require($repInclude . "_entete.inc.html");
+  	require($repInclude . "_menu.inc.php");
 ?>
-<html>
-<head>
-	<title>Suivi des frais de visite</title>
-	<style type="text/css">
-		<!-- body {background-color: white; color:5599EE; } 
-			.titre { width : 180 ;  clear:left; float:left; } 
-			.zone { float : left; color:7091BB } -->
-	</style>
-</head>
-<body>
-<div name="gauche" style="clear:left:;float:left;width:18%; background-color:white; height:100%;">
-<div name="coin" style="height:10%;text-align:center;"><img src="logo.jpg" width="100" height="60"/></div>
-<div name="menu" >
-	<h2>Outils</h2>
-	<ul><li>Frais</li>
-		<ul>
-			<li><a href="formSaisieFrais.htm" >Nouveau</a></li>
-			<li><a href="formConsultFrais.htm">Consulter</a></li>
-		</ul>
-	</ul>
-</div>
-</div>
-<div name="droite" style="float:left;width:80%;">
-	<div name="haut" style="margin: 2 2 2 2 ;height:10%;float:left;"><h1>Suivi de remboursement des Frais</h1></div>	
-	<div name="bas" style="margin : 10 2 2 2;clear:left;background-color:77AADD;color:white;height:88%;">
+<div name="droite" style="float:left;width:80%;margin-bottom : 20px;">
+	<div name="bas" style="margin : 10 2 2 2;clear:left;background-color:77AADD;color:black;height:88%;">
 		<h1> Période </h1>
 			<form action="formConsultFrais.php" method="POST">
 				<label class="titre">Année/Mois :</label> 
 				<input class="zone" type="text" name="dateConsult" size="12" />	
 				<input type="submit" class="bouton" value="Choisir une date" />
 			</form>
+			<?php
+				//si l'utilisateur a choisi un mois et une année
+				if (isset($_POST['dateConsult'])) 
+    			{
+		    		$dateConsult = $_POST['dateConsult'];	
+		    		// Affiche la fiche de frais pour chaque utilisateur dans le mois sélectionné
+					$req = $bdd->prepare("SELECT mois, dateModif, idEtat, nom, prenom, nbJustificatifs
+										  FROM fichefrais F, visiteur V
+										  WHERE V.id = F.idVisiteur
+										  AND mois = :dateConsult
+										  AND (idEtat = 'CL' OR idEtat = 'VA')");
+					$req->bindValue(":dateConsult", $dateConsult, PDO::PARAM_INT);
+			    	$req->execute();
+			    	$resultat = $req->fetchAll();	
+
+			    	if (empty($resultat))
+			    	{
+			    		echo "<p style='color:red;font-size:20px;text-align:center;'><br><br>Il n'y a aucune fiche de frais pour la période choisie.</p>";
+			    	} 
+			    	else 
+			    	{					
+			?>
 		<p class="titre" />
 		<div style="clear:left;"><h2>Frais au forfait </h2></div>
-		<table style="color:white;" border="1">
-			<tr><th>Repas midi</th><th>Nuitée </th><th>Etape</th><th>Km </th><th>Situation</th><th>Date opération</th></tr>
-			<?php 
-			if (isset($_POST['dateConsult'])) 
-    	{
-    		$dateConsult = $_POST['dateConsult'];
+		<table style="color:black;" border="1">
+			<tr>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Nom Visiteur</th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Prénom Visiteur </th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Etat fiche de frais</th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Nombre Justificatifs</th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Date opération</th>
+			</tr>
+			<?php
+				
+			    	foreach($resultat as $ligne) 
+					{
+						$situation= $ligne["idEtat"]; 
+						$dateModif = $ligne["dateModif"];
+						$mois = $ligne["mois"];
+						$nom = $ligne["nom"];
+						$prenom = $ligne["prenom"];	
+						$nbJustificatifs = $ligne["nbJustificatifs"];	
 
-			$req1 = $bdd->prepare("SELECT mois, dateModif, idEtat 
-								  FROM fichefrais
-								  WHERE mois = :dateConsult");
-			$req1->bindValue(":dateConsult", $dateConsult, PDO::PARAM_INT);
-	    	$req1->execute();
-	    	$resultat2 = $req1->fetchAll();
-	    	foreach($resultat2 as $ligne2) 
-			{
-				$situation= $ligne2["idEtat"]; 
-				$dateModif = $ligne2["dateModif"];
-				$mois = $ligne2["mois"];
-
-				if ($situation == 'CL')
-				{
-					$situation = 'Saisie cloturée';
-				}
-				if ($situation == 'CR')
-				{
-					$situation = 'Saisie en cours';
-				}
-				if ($situation == 'RB')
-				{
-					$situation = 'Remboursée';
-				}
-				if ($situation == 'VA')
-				{
-					$situation = 'Validée et mise en paiement';
-				}
-
-	    	$req2 = $bdd->prepare("SELECT (montant*quantite) as prix
-										FROM lignefraisforfait LFF, fraisforfait FF
-										WHERE LFF.idFraisForfait = FF.id
-										ORDER BY LFF.idVisiteur");
-	    	$req2->execute();
-	    	$resultat = $req2->fetchAll();	
-	    	$tableau = array();    
-			
-				foreach($resultat as $ligne) 
-			{
-				array_push($tableau, $ligne["prix"]);
-    		}
-
+						if ($situation == 'CL') 
+							{
+								$situation = 'Saisie cloturée';
+							}
+						if ($situation == 'CR')
+							{
+								$situation = 'Saisie en cours';
+							}
+						if ($situation == 'RB')
+							{
+								$situation = 'Remboursée';
+							}
+						if ($situation == 'VA') 
+							{
+								$situation = 'Validée et mise en paiement';
+							}
 			?>
 			<tr align="center">
-				<?php
-					for()
-				?>
-				<td width="80"><label  size="3" name="repas"/><?php echo $tableau[3]; ?></td>
-				<td width="80"><label size="3" name="nuitee"/><?php echo $tableau[2]; ?></td> 
-				<td width="80"> <label size="3" name="etape"/><?php echo $tableau[0]; ?></td>
-				<td width="80"> <label size="3" name="km" /><?php echo $tableau[1]; ?></td>
-				<td width="80"> <label size="3" name="situation" /><?php echo $situation; ?></td>	
+				<td width="80"> <label size="3" name="situation" /><?php echo $nom; ?></td>	
+				<td width="80"> <label size="3" name="situation" /><?php echo $prenom; ?></td>		
+				<td width="80"> <label size="3" name="situation" /><?php echo $situation; ?></td>
+				<td width="80"> <label size="3" name="dateOper" /><?php echo  $nbJustificatifs; ?></td>	
 				<td width="80"> <label size="3" name="dateOper" /><?php echo  $dateModif; ?></td>					
 			</tr>
 			<?php
-			
-		}
-		
-		
-			?>	
-		</table>
-		
-		<p class="titre" /><div style="clear:left;"><h2>Hors Forfait</h2></div>
-		<table style="color:white;" border="1">
-			<tr><th>Date</th><th>Libellé </th><th>Montant</th><th>Situation</th><th>Date opération</th></tr>
-			<?php 
-			
-				
-
-				$req1 = $bdd->prepare("SELECT  libelle, date, montant, dateModif, idEtat, COUNT(nbJustificatifs)
-								  FROM lignefraishorsforfait L, fichefrais F
-								  WHERE L.idVisiteur = F.idVisiteur
-								  AND F.mois = :dateConsult");
-			$req1->bindValue(":dateConsult", $dateConsult, PDO::PARAM_INT);
-	    	$req1->execute();
-	    	$resultat1 = $req1->fetchAll();
-	    	foreach($resultat1 as $ligne1) 
-			{
-				$libelle = $ligne1["libelle"];
-				$date = $ligne1["date"];
-				$montant = $ligne1["montant"];
-				$situation1= $ligne1["idEtat"]; 
-				$dateModif1 = $ligne1["dateModif"];
-				$nbJustificatifs = $ligne1["nbJustificatifs"];
+				}
+			}
 			?>
-			<tr align="center"><td width="100" ><label size="12" name="hfDate1"/><?php echo $date;?></td>
+			</table>
+			<?php
+				// Affiche le hors forfait pour chaque utilisateur dans le mois sélectionné
+				$req1 = $bdd->prepare("SELECT  libelle, date, montant, etat,  nom, prenom
+									  FROM lignefraishorsforfait L, visiteur V
+									  WHERE V.id =  L.idVisiteur 
+									  AND (etat = 'CL' OR etat = 'VA')
+									  AND L.mois = :dateConsult");
+				$req1->bindValue(":dateConsult", $dateConsult, PDO::PARAM_INT);
+		    	$req1->execute();
+		    	$resultat1 = $req1->fetchAll();
+
+		    	if (empty($resultat1))
+			    	{
+			    		echo "";
+			    	} 
+			    else
+			    {
+			?>
+			<p class="titre" /><div style="clear:left;"><h2>Hors Forfait</h2></div>
+		<table style="color:black;" border="1">
+			<tr><th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Nom Visiteur</th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Prénom Visiteur</th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Date</th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Libellé </th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Montant</th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Situation</th>
+				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Date opération</th></tr>
+			<?php
+				
+		    	foreach($resultat1 as $ligne1) 
+				{
+					$libelle = $ligne1["libelle"];
+					$date = $ligne1["date"];
+					$montant = $ligne1["montant"];
+					$situation1= $ligne1["etat"]; 
+					$dateModif1 = $ligne1["date"];
+					$prenom1 = $ligne1["prenom"];
+					$nom1 = $ligne1["nom"];
+
+					if ($situation1 == 'CL') 
+							{
+								$situation1 = 'Saisie cloturée';
+							}
+						if ($situation1 == 'CR')
+							{
+								$situation1 = 'Saisie en cours';
+							}
+						if ($situation1 == 'RB')
+							{
+								$situation1 = 'Remboursée';
+							}
+						if ($situation1 == 'VA') 
+							{
+								$situation1 = 'Validée et mise en paiement';
+							}
+			?>
+			<tr align="center">
+				<td width="80"> <label size="3" name="situation" /><?php echo $nom1; ?></td>	
+				<td width="80"> <label size="3" name="situation" /><?php echo $prenom1; ?></td>
+				<td width="100" ><label size="12" name="hfDate1"/><?php echo $date;?></td>
 				<td width="220"><label size="30" name="hfLib1"/><?php echo $libelle;?></td> 
 				<td width="90" ><label size="10" name="hfMont1"/><?php echo $montant;?></td>
 				<td width="80"> <label size="3" name="hfSitu1" /><?php echo $situation1;?></td>
 				<td width="80"> <label size="3" name="hfDateOper1" /><?php echo $dateModif1;?></td>		
-				</tr>
-				<?php }}?>
-		</table>	
-		<p class="titre"></p>
-		<div class="titre">Nb Justificatifs</div><input type="text" class="zone" size="4" name="hcMontant" value="<?php echo $nbJustificatifs;?>"/>
+			</tr>
+			<?php
+			}
+		}
+		}
+		?>
+		</table>			
 	</form>
 	</div>
 </div>
-</body>
-</html>
+<br><br><br>
+<?php
+require($repInclude . "_pied.inc.html");
+
+?>
