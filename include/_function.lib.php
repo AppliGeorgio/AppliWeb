@@ -167,8 +167,6 @@ function ajouterforfait($bdd){
      $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$kmv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'KM'");
      $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$nuiv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'NUI'");
      $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$repv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'REP'");      
-
-     header('Location: cSaisieFicheFrais.php?type=forf');
 }
 ?>
 
