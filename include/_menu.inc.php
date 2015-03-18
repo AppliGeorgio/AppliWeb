@@ -14,8 +14,16 @@
             echo $_SESSION['nom'].' '.$_SESSION['prenom'];
         ?>
 		</h2>
-
-        <h3>Visiteur médical</h3>        
+      <?php
+           if($_SESSION['comptable'] == 1)
+           {
+            echo "<h3>Comptabilité</h3>";
+          }
+        else
+        {
+          echo "<h3>Visiteur médical</h3>";
+        }  
+        ?>        
 
       </div>  
 
@@ -29,7 +37,8 @@
            <?php
            if($_SESSION['comptable'] == 1){
             echo "<li class='smenu'>";
-            echo "<a href='formValidFrais.htm' title='Saisie fiche de frais du mois courant'>Saisie fiche de frais</a></li>";
+            echo "<a href='formValidFrais.php' title='Saisie fiche de frais du mois courant'>Validation des fiches de frais</a></li>";
+            echo "<a href='formConsultFrais.php' title='Suivi de remboursement des Frais'>Consultation des fiches de frais</a></li>";
            }
            else{
             echo "<li class='smenu'>";
@@ -43,6 +52,10 @@
 	<?php 
 	  }
 	?>
+    
+
+    
+
     
 
     
