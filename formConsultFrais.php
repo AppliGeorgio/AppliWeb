@@ -45,7 +45,6 @@
 				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Date opération</th>
 			</tr>
 			<?php
-				
 			    	foreach($resultat as $ligne) 
 					{
 						$situation= $ligne["idEtat"]; 
@@ -112,7 +111,6 @@
 				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Situation</th>
 				<th style="background-color:#77AADD; color : white; font-variant : small-caps;font-size : 16px;">Date opération</th></tr>
 			<?php
-				
 		    	foreach($resultat1 as $ligne1) 
 				{
 					$libelle = $ligne1["libelle"];
@@ -161,5 +159,4 @@
 <br><br><br>
 <?php
 require($repInclude . "_pied.inc.html");
-
 ?>
