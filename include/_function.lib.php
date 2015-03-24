@@ -168,5 +168,6 @@ function ajouterforfait($bdd){
      $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$nuiv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'NUI'");
      $bdd->exec("UPDATE `lignefraisforfait` SET `quantite`= '$repv' WHERE idVisiteur = '$id' AND mois = '$mois' AND idFraisForfait = 'REP'");      
 }
-?>
+
+function obtenirLibelleMois($unNoMois) { $tabLibelles = array(1=>"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"); $libelle=""; if ( $unNoMois >=1 && $unNoMois <= 12 ) { $libelle = $tabLibelles[$unNoMois]; } return $libelle; } ?>
 
