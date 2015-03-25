@@ -21,6 +21,7 @@
 			forfaitises($bdd);
 			if(isset($_POST['valide'])){
 			ajouterforfait($bdd);
+			header( "refresh:0.1;url=cSaisieFicheFrais.php?type=forf" );
 			}
 		}
 
