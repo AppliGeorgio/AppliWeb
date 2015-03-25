@@ -56,7 +56,7 @@
 
             <form method="post" action="formValidFrais.php">
                 <label class="titre">Choisir le visiteur :</label>
-                <select name="lstVisiteur" class="zone">
+                <select name="visiteur" class="zone">
 
                     <?php
                         while($visiteur = $sql->fetch()){
@@ -70,15 +70,6 @@
             </form>
             
             <?php
-            /*$nomVisiteur = $_POST['lstVisiteur'];
-            $sql = $bdd->prepare("SELECT fichefrais.idVisiteur
-                FROM fichefrais, visiteur
-                WHERE fichefrais.idVisiteur = visiteur.idVisiteur
-                AND visiteur.nom = :$nomVisiteur");
-            $sql->bindValue(":nomVisiteur", $nomVisiteur, PDO::PARAM_STR);
-            $sql -> execute();
-            $idVisiteur = $sql->fetch();*/
-
                 }
             ?>
 
@@ -96,6 +87,13 @@
                 
                     $sql->execute();
                     $lignefraisforfait = $sql->fetch();*/
+
+                    $nomVisiteur = $_POST['visiteur'];
+                    $sql = $bdd->prepare("SELECT visiteur.idVisiteur
+                        FROM visiteur
+                        WHERE visituer.nom = '".$nomVisiteur."'");
+                    $sql->bindValue(":nomVisiteur", $nomVisiteur, PDO::PARAM_STR);
+                    $sql->execute();
 
                     $moisPremierForm = $_POST["mois"];
                     $noMois = intval(substr($moisPremierForm, 4, 2));
