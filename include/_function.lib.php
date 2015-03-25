@@ -57,6 +57,7 @@ function forfaitises($bdd){
                     $bdd->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'KM')");
                     $bdd->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'NUI')");
                     $bdd->exec("INSERT INTO `lignefraisforfait`(`idVisiteur`, `mois`, `idFraisForfait`) VALUES  ('".$_SESSION['id']."', '".$mois."', 'REP')");
+                	header( "refresh:0.1;url=cSaisieFicheFrais.php?type=forf" );
             }
 
           		echo '</fieldset>
