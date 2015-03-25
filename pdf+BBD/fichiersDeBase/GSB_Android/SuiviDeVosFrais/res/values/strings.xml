@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Suivi de vos frais</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_frais_km">Suivi de vos frais</string>
+    <string name="title_activity_repas">Suivi de vos frais</string>
+    <string name="title_activity_nuitee">Suivi de vos frais</string>
+    <string name="title_activity_etape">Suivi de vos frais</string>
+    <string name="title_activity_hf">Suivi de vos frais</string>
+    <string name="title_activity_hf_recap">Suivi de vos frais</string>
+    <string name="title_activity_layout_liste">LayoutListe</string>
+
+</resources>

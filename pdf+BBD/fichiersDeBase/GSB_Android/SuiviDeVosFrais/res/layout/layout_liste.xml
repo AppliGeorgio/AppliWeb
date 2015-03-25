@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/txtListJour"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        android:gravity="right"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/lblListSepare"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="0.5"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:text=":"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/txtListMontant"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="1.5"
+        android:gravity="right"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/lblListEuro"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="0.5"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:text="€"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/txtListMotif"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_weight="3.5"
+        android:paddingLeft="4dp"
+        android:paddingRight="2dp"
+        android:textSize="20sp" />
+
+</LinearLayout>
