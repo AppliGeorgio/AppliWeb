@@ -45,7 +45,7 @@
                   $annee = intval(substr($mois, 0, 4));
                 
             ?>     
-            <option value = "<?php echo $mois; ?>" ><?php echo $mois; ?></option>
+            <option value = "<?php echo $mois; ?>" ><?php echo $noMois," / ", $annee; ?></option>
 			
             <?php
 				}
