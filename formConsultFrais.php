@@ -9,7 +9,24 @@
 		<h1> Période </h1>
 			<form action="formConsultFrais.php" method="POST">
 				<label class="titre">Année/Mois :</label> 
-				<input class="zone" type="text" name="dateConsult" size="12" />	
+				<select name="dateConsult" class="zone">
+				<?php
+					$req = $bdd->prepare("SELECT DISTINCT fichefrais.mois as mois 
+                                      FROM fichefrais 
+                                      ORDER BY fichefrais.mois DESC");
+                $req->execute();
+                $resultat = $req->fetchAll();
+                foreach ($resultat as $ligne) 
+                {
+                  $mois = $ligne['mois'];
+                  $noMois = intval(substr($mois, 4, 2));
+                  $annee = intval(substr($mois, 0, 4));
+                
+				?>     
+				<option value = "<?php echo $mois; ?>" ><?php echo $noMois," / ", $annee; ?></option>
+				<?php
+				}
+				?>
 				<input type="submit" class="bouton" value="Choisir une date" />
 			</form>
 			<?php
