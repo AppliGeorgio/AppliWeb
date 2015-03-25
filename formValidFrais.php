@@ -1,32 +1,9 @@
 <?php
-    require("include/_coDb.inc.php");
-?>
-
-<html>
-<head>
-    <title>Validation des frais de visite</title>
-    <style type="text/css">
-        <!-- body {background-color: white; color:EE8855; } 
-        .titre { width : 180 ;  clear:left; float:left; } 
-        .zone { float : left; color:CC8855 } -->
-    </style>
-</head>
-
-<body>
-    <div name="gauche" style="clear:left:;float:left;width:18%; background-color:white; height:100%;">
-        <div name="coin" style="height:10%;text-align:center;"><img src="images/logo.jpg" width="100" height="60"/></div>
-        <div name="menu" >
-            <h2>Outils</h2>
-            <ul><li>Frais</li>
-                <ul><li><a href="formValidFrais.htm" >Enregistrer opération</a></li></ul>
-                <ul><li><a href="cSeDeconnecter.php" >Deconnexion</a></li></ul>
-            </ul>
-        </div>
-    </div>
-    <div name="droite" style="float:left;width:80%;">
-        <div name="haut" style="margin: 2 2 2 2 ;height:10%;float:left;"><h1>Validation des Frais</h1></div> 
-        <div name="bas" style="margin : 10 2 2 2;clear:left;background-color:EE8844;color:white;height:88%;">
-    
+    $repInclude = './include/';
+  	require($repInclude . "_coDb.inc.php");
+    require($repInclude . "_entete.inc.html");
+  	require($repInclude . "_menu.inc.php");
+?>  
             <?php
                 if( !isset($_POST['confMois'])){
             ?>
@@ -55,8 +32,7 @@
                 
                 <input class='zone' type='submit' name='confMois'>
             </form>
-
-            <?php
+               <?php
                 }
             ?>
 
@@ -200,7 +176,6 @@
                 </tr>
             </table>  
         </form>
-
     <?php
         }
     ?>
@@ -214,8 +189,7 @@
 <input class="zone"type="reset" />
 <input class="zone"type="submit" />
 -->
-</form>
-</div>
-</div>
-</body>
-</html>
+<br><br><br>
+<?php
+require($repInclude . "_pied.inc.html");
+?>
