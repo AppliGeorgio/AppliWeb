@@ -1,9 +1,10 @@
 <?php
     $repInclude = './include/';
-  	require($repInclude . "_coDb.inc.php");
+    require($repInclude . "_coDb.inc.php");
     require($repInclude . "_entete.inc.html");
-  	require($repInclude . "_menu.inc.php");
-?>  
+    require($repInclude . "_menu.inc.php");
+    ?>
+
             <?php
                 if( !isset($_POST['confMois'])){
             ?>
@@ -32,7 +33,8 @@
                 
                 <input class='zone' type='submit' name='confMois'>
             </form>
-               <?php
+
+            <?php
                 }
             ?>
 
@@ -68,18 +70,33 @@
             </form>
             
             <?php
+            /*$nomVisiteur = $_POST['lstVisiteur'];
+            $sql = $bdd->prepare("SELECT fichefrais.idVisiteur
+                FROM fichefrais, visiteur
+                WHERE fichefrais.idVisiteur = visiteur.idVisiteur
+                AND visiteur.nom = :$nomVisiteur");
+            $sql->bindValue(":nomVisiteur", $nomVisiteur, PDO::PARAM_STR);
+            $sql -> execute();
+            $idVisiteur = $sql->fetch();*/
+
                 }
             ?>
 
             <!-- 3e formulaire -->
             
             <?php
-                $sql = $bdd->prepare("SELECT fichefrais.horsForfait
-                    FROM fichefrais");
-                $sql->execute();
-                $boolHorsForfait = $sql->fetch();
-                if( isset($_POST['confVisiteur']) && !isset($_POST['confMois']) && $boolHorsForfait['horsForfait'] == 0){
-                    $nomVisiteur = $_POST['lstVisiteur'];
+                if( isset($_POST['confVisiteur']) /*&& $lignefraisforfait != null*/){
+                    //$nomVisiteur = $_POST['lstVisiteur'];
+                    /*$sql = $bdd->prepare("SELECT fichefrais.idVisiteur, fichefrais.mois
+                        FROM fichefrais, lignefraisforfait
+                        WHERE fichefrais.idVisiteur = lignefraisforfait.idVisiteur
+                        AND fichefrais.idVisiteur = '".$idVisiteur."'
+                        AND fichefrais.mois = lignefraisforfait.mois
+                        AND fichefrais = '".$moisPremierForm."'");
+                
+                    $sql->execute();
+                    $lignefraisforfait = $sql->fetch();*/
+
                     $moisPremierForm = $_POST["mois"];
                     $noMois = intval(substr($moisPremierForm, 4, 2));
                     $annee = intval(substr($moisPremierForm, 0, 4));
@@ -90,7 +107,7 @@
                 <h2>Frais au forfait </h2>
             </div>
             <form method="post" action="formValidFrais.php">
-                <table style="color:white;" border="1">
+                <table style="color:black;" border="1">
                     <tr>
                         <th>Repas midi</th>
                         <th>Nuitée </th>
@@ -134,7 +151,7 @@
 
             <?php
                 }
-                else if(isset($_POST['confVisiteur']) && !isset($_POST['confMois']) && $boolHorsForfait['horsForfait'] == 1){
+                if(isset($_POST['confVisiteur']) && !isset($_POST['confMois'])/* && $lignefraisforfait == null*/){
             ?>
 
             <p class="titre" />
@@ -142,7 +159,7 @@
                 <h2>Hors Forfait</h2>  
             </div>
             <form>
-                <table style="color:white;" border="1">
+                <table style="color:black;" border="1">
                     <tr>
                         <th>Date</th>
                         <th>Libellé </th>
@@ -174,8 +191,10 @@
                         </select>
                     </td>
                 </tr>
-            </table>  
+            </table>
+            <input class='zone' type='submit' name='confHorsforfait'/>
         </form>
+
     <?php
         }
     ?>
@@ -189,7 +208,8 @@
 <input class="zone"type="reset" />
 <input class="zone"type="submit" />
 -->
-<br><br><br>
-<?php
-require($repInclude . "_pied.inc.html");
-?>
+</form>
+</div>
+</div>
+</body>
+</html>
